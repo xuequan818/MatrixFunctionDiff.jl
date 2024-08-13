@@ -9,7 +9,7 @@ makedocs(;
     sitename="MatrixFunctionDiff.jl",
     format=Documenter.HTML(;
         canonical="https://xuequan818.github.io/MatrixFunctionDiff.jl",
-        edit_link="main",
+        edit_link="master",
         assets=String[],
     ),
     pages=[
