@@ -20,5 +20,5 @@ makedocs(;
 
 deploydocs(;
     repo="github.com/xuequan818/MatrixFunctionDiff.jl",
-    devbranch="main",
+    devbranch="master",
 )

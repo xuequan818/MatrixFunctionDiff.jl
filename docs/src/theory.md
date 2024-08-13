@@ -1,6 +1,6 @@
 ## Frechet derivative of Matrix functions
 
-Let $\mathcal{H}:=\mathbb{R}^{N\times N}_{\rm sym}$ be the vector space of $N\times N$ real symmetric matrices. For $H\in\mathcal{H}$ and $h_1,...h_n\in\mathcal{H}$, and $f$ is a $n$ times continuously differentiable function on a subset of $\mathbb{R}$ containing the spectrum of $H+t_1h_1+\cdots + t_nh_n$, the $n$ order Fr${\rm \acute{e}}$chet derivative of $f(H)$ is
+Let $\mathcal{H}:=\mathbb{R}^{N\times N}_{\rm sym}$ be the vector space of $N\times N$ real symmetric matrices. For $H\in\mathcal{H}$ and $h_1,...h_n\in\mathcal{H}$, and $f$ is a $n$ times continuously differentiable function on a subset of $\mathbb{R}$ containing the spectrum of $H+t_1h_1+\cdots + t_nh_n$, the $n$ order Frechet derivative of $f(H)$ is
 ```math
 \begin{align}
     \label{fd}
@@ -59,7 +59,7 @@ Let $(\lambda_i,\phi_i), i = 1,\dots,n$ be the eigenpairs of $H$, then we have
     &=\sum_{i_1,\cdots,i_{n+1}=1}^n\phi_{i_1}(h_{\mathcal{P}_n(1)})_{i_1,i_2}\cdots (h_{\mathcal{P}_n(n)})_{i_n,i_{n+1}}\phi_{i_{n+1}}^*(z-\lambda_{i_1})^{-1}\cdots (z-\lambda_{i_{n+1}})^{-1},
 \end{align*}
 ```
-where $(h_{\mathcal{P}_n(k)})_{i,j}=\phi_i^*h_{\mathcal{P}_n(k)}\phi_j$. We let
+where $`(h_{\mathcal{P}_n(k)})_{i,j}=\phi_i^*h_{\mathcal{P}_n(k)}\phi_j`$. We let
 ```math 
     (z-\lambda_{i_1})^{-1}\cdots (z-\lambda_{i_{n+1}})^{-1} = \sum_{k=1}^{n+1}C_k (z-\lambda_{i_k})^{-1},
 ```
