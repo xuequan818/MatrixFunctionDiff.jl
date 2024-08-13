@@ -1,0 +1,7 @@
+module MatrixFunctionDiff
+
+using Combinatorics
+using DividedDifferences
+using PermutationSymmetricTensors
+
+end
