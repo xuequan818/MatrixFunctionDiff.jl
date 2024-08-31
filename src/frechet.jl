@@ -1,30 +1,31 @@
 @doc row"""
-    frechet_derivative(f, eigs, Ψ::AbstractMatrix, hs::Vector{AbstractMatrix})
-    frechet_derivative(f, H::AbstractMatrix, hs::Vector{AbstractMatrix})
+    mat_fun_frechet(f, eigs, Ψ::AbstractMatrix, hs::Vector{AbstractMatrix})
+    mat_fun_frechet(f, H::AbstractMatrix, hs::Vector{AbstractMatrix})
 
-Return the Frechet derivative `d^nf(H)hs_1…hs_n`, assuming `f` is called as `f(x)`.
-Use array operations to efficiently compute the Frechet derivative.
+Return the n-th order Fréchet derivative `d^nf(H)hs_1…hs_n`, assuming `f` is called as `f(x)`.
+Use array operations to efficiently compute the Fréchet derivative.
 For simplicity, just consider the no permutation case and define
 ```math
-(F_n)_{k\ell}:=\sum_{i_1,\cdots,i_{n-1}=1}^N(h_1)_{k,i_1}\cdots (h_n)_{i_{n-1},\ell}\Lambda^{0,1,\dots,n-1,n}_{k,i_1,\dots,i_{n-1},\ell},
+(F_n)_{kℓ}:=∑_{i_1,⋯,i_{n-1}=1}^N(h_1)_{k,i_1}⋯ (h_n)_{i_{n-1},ℓ}Λ^{0,1,…,n-1,n}_{k,i_1,…,i_{n-1},ℓ},
 ```
-where $\Lambda^{0,\dots,n}_{i_0,\dots,i_n} := f[\lambda_{i_0},\cdots,\lambda_{i_n}]$.
-It is immediately to obtain that $F_1= h_1\Lambda^{0,1}$, 
-and $F_2=\sum_{i=1}^N (\mathfrak{h}^{1,2}\circ \Lambda^{0,1,2})_{:,i,:}$ with $\mathfrak{h}^{1,2}_{:,i,:} := (h_1)_{:,i} (h_2)_{i,:}$.
-For $n \geq 3$, first compute 
+where $Λ^{0,…,n}_{i_0,…,i_n} := f[λ_{i_0},⋯,λ_{i_n}]$.
+It is immediately to obtain that $F_1 =  h_1 Λ^{0,1}$, 
+and $F_2 = ∑_{i=1}^N (\mathfrak{h}^{1,2} ∘ Λ^{0,1,2})_{:,i,:}$ with $\mathfrak{h}^{1,2}_{:,i,:} := (h_1)_{:,i}(h_2)_{i,:}$.
+For $n ≥ 3$, first compute 
 ```math
-\mathfrak{F}^{0,2,\dots,n}_{:,:,j_3,\dots,j_n} :=\sum_{i=1}^N(\mathfrak{h}^{1,2}\circ \Lambda^{0,1,\dots, n}_{:,:,:,j_3,\dots,j_n})_{:,i,:}
+\mathfrak{F}^{0,2,…,n}_{:,:,j_3,…,j_n} := ∑_{i=1}^N (\mathfrak{h}^{1,2} ∘ Λ^{0,1,…,n}_{:,:,:,j_3,…,j_n})_{:,i,:}
 ```
 and permute such that the $0$-dimension is at the end $
-\mathfrak{F}^{2,\dots,n, 0}$. 
-Then for $m\geq 3$, there is the recursion
+\mathfrak{F}^{2,…,n,0}$. 
+Then for $m ≥ 3$, there is the recursion
 ```math
-\mathfrak{F}^{m,\dots,n, 0}_{:,j_{m},\dots,j_n} = \sum_{i=1}^N (h_m \circ\mathfrak{F}^{m-1,\dots,n, 0}_{:,:,j_{m},\dots,j_n})_{i,:}
+\mathfrak{F}^{m,…,n,0}_{:,j_m,…,j_n} = ∑_{i=1}^N (h_m ∘ \mathfrak{F}^{m-1,…,n,0}_{:,:,j_m,…,j_n})_{i,:}
 ```
-and $F_n = (\mathfrak{F}^{n,0})^T$."""
-function frechet_derivative(f::Function, eigs::Vector{T},
-                            Ψ::AbstractMatrix, 
-                            hs::Vector{V}) where {T<:Real, V<:AbstractMatrix}
+and $F_n = (\mathfrak{F}^{n,0})^T$.
+"""
+function mat_fun_frechet(f::Function, eigs::Vector{Float64},
+                         Ψ::AbstractMatrix, 
+                         hs::Vector{V}) where {V<:AbstractMatrix}
     N = length(eigs)
     order = length(hs)
     DD_F = DD_tensor(f, eigs, order)
@@ -38,21 +39,21 @@ function frechet_derivative(f::Function, eigs::Vector{T},
     N0 = N^(order - 2)
     DD_F = reshape(DD_F, N, N, N, N0)
 
-    pert = collect(permutations(1:order))
+    T = promote_type(eltype(Ψ), eltype(V))
     val = zeros(T, N, N)
-    TT = promote_type(eltype(Ψ),eltype(V))
-    hinit = zeros(TT, N, N, N)
+    h12 = zeros(T, N, N, N)
+    pert = collect(permutations(1:order))
     for p in pert
         @views hp = hs[p]
 
-        @. hinit = zero(TT)
+        @. h12 = zero(TT)
         @views for i = 1:N
-            hinit[:, i, :] = hp[1][:, i] * transpose(hp[2][i, :])
+            h12[:, i, :] = hp[1][:, i] * transpose(hp[2][i, :])
         end
 
         hF = zeros(TT, N, N, N0)
         @views for i = 1:N0
-            hF[:, :, i] = dropdims(sum(hinit .* DD_F[:, :, :, i], dims=2); dims=2)
+            hF[:, :, i] = dropdims(sum(h12 .* DD_F[:, :, :, i], dims=2); dims=2)
         end
         hF = reshape(hF, ntuple(x -> N, order))
 
@@ -68,14 +69,16 @@ function frechet_derivative(f::Function, eigs::Vector{T},
                 hF[:, i] = dropdims(sum(hp[k] .* DD_Fk[:, :, i], dims=1), dims=1)
             end
         end
-        val += hF
+
+        # directly add hF^{n,0} by the symmetry of frechet derivative  
+        val += hF 
     end
 
     Ψ * val * Ψ'
 end
 
-function frechet_derivative(f::Function, H::AbstractMatrix,
-                            hs::Vector{V}) where {V<:AbstractMatrix}
+function mat_fun_frechet(f::Function, H::AbstractMatrix,
+                         hs::Vector{V}) where {V<:AbstractMatrix}
     # only support hermitian matrices                        
     @assert norm(H - H') < eps(real(eltype(H)))
     for h in hs
@@ -87,7 +90,7 @@ function frechet_derivative(f::Function, H::AbstractMatrix,
     eigs, Ψ = eigen(H)
 
     # compute the frechet derivative by eigen pairs
-    frechet_derivative(f, eigs, Ψ, hs)
+    mat_fun_frechet(f, eigs, Ψ, hs)
 end
 
 # Generate the divided difference tensor 

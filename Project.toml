@@ -1,7 +1,7 @@
 name = "MatrixFunctionDiff"
 uuid = "5a80cb59-5c4a-4b04-8570-513e0deda534"
 authors = ["xquan818 <xuequan818@gmail.com>"]
-version = "1.0.0-DEV"
+version = "1.0.0"
 
 [compat]
 julia = "1.6.7"
