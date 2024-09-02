@@ -50,7 +50,7 @@ Similarly, we have
 Therefore, we can obtain the formula.
 
 ## Divided difference form
-Let $(\lambda_i,\phi_i), i = 1,\dots,N$ be the eigenpairs of $H$, then for $p\in\mathcal{P}_n$ we have
+Let $(\lambda_i,\phi_i), i = 1,\dots,N$ be the eigenpairs of $H$, and assume there is no degeneration. Then for $p\in\mathcal{P}_n$ we have
 ```math 
 \begin{align*}
     (z-&H)^{-1}h_{p(1)}(z-H)^{-1}\cdots(z-H)^{-1}h_{p(n)}(z-H)^{-1}\\
@@ -63,7 +63,7 @@ where $(h_{p(k)})_{i,j}=\phi_i^*h_{p(k)}\phi_j$. We let
 ```
 then
 ```math 
-\sum_{k=0}^{n}C_k \prod_{\ell\neq k}(z-\lambda_{i_k})=1.
+\sum_{k=0}^{n}C_k \prod_{\ell\neq k}(z-\lambda_{i_\ell})=1.
 ```
 Let $z=\lambda_{i_k}$, we can obtain
 ```math 

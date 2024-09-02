@@ -26,7 +26,8 @@ function frechet_naive(f::Function, eigs::Vector{Float64},
             for p in pert
                 hval += prod(l -> hs[p[l]][kind[l], kind[l+1]], 1:order)
             end
-            val[i, j] += hval * DD_F[kind...]
+            ΛF = divided_difference(f, eigs[kind])
+            val[i, j] += hval * ΛF
 
             if length(ktr) > 0
                 ktr[1] += 1
