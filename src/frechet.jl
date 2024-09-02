@@ -87,7 +87,7 @@ function DD_tensor(f::Function, eigs::Vector{T}, order::Integer) where {T}
 
     DD_F_sym_index = find_full_indices(N, dim)
     DD_F_sym_val = @. divided_difference(f, eigs_take(DD_F_sym_index))
-    DD_F = SymmetricTensor(DD_F_sym_val, Val(N), Val(dim))
+    DD_F = PermutationSymmetricTensors.SymmetricTensor(DD_F_sym_val, Val(N), Val(dim))
 
     return Array(DD_F)
 end
