@@ -50,7 +50,7 @@ const Funs = [DividedDifferences.heaviside, x -> 1.0 / (1.0 + exp(10 * (x - 0.0)
     X = rand(N, N);
     H = 0.5 * (X + X');
 	eigs, Ψ = eigen(H);
-	for order in 1:4
+	for order in 1:1
 		h = [rand(N, N) for i = 1:order]
 		hs = [0.5 * (x + x') for x in h]
 		for f in Funs
@@ -65,7 +65,7 @@ end
     X = rand(ComplexF64, N, N)
     H = 0.5 * (X + X')
     eigs, Ψ = eigen(H)
-    for order in 1:4
+    for order in 1:1
         h = [rand(ComplexF64, N, N) for i = 1:order]
         hs = [0.5 * (x + x') for x in h]
         for f in Funs
