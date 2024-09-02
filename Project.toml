@@ -11,6 +11,9 @@ PermutationSymmetricTensors = "22e17884-8c1a-4ea8-8b39-5974e24a9d31"
 
 [compat]
 julia = "1.6.7"
+Combinatorics = "1"
+DividedDifferences = "1"
+PermutationSymmetricTensors = "0.2"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
