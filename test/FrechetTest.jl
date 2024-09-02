@@ -12,7 +12,6 @@ function frechet_naive(f::Function, eigs::Vector{Float64},
 					   hs::Vector{V}) where {V<:AbstractMatrix}
     N = length(eigs)
     order = length(hs)
-    DD_F = MatrixFunctionDiff.DD_tensor(f, eigs, order)
     hs = map(x -> Ψ' * x * Ψ, hs)
 
     pert = collect(permutations(1:order))
