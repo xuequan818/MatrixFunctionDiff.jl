@@ -14,8 +14,30 @@ julia> using MatrixFunctionDiff
 julia> using DividedDifferences
 
 julia> f = DividedDifferences.heaviside; # Heaviside step function
+
 julia> order = 2; # 2nd order Fréchet derivative
 
+julia> N = 10; # dimension of matrix
+
+julia> X = rand(N, N);
+
+julia> H = 0.5 * (X + X');
+
+julia> h = [rand(N, N) for i = 1:order];
+
+julia> hs = [0.5 * (x + x') for x in h];
+
+julia> mat_fun_frechet(f, H, hs);
+```
+
+MatrixFunctionDiff can also compute the Fréchet derivatives by the eigenpairs of `H`:
+
+```julia
+using LinearAlgebra
+
+julia> eigs, Ψ = eigen(H);
+
+julia> mat_fun_frechet(f, eigs, Ψ, hs);
 ```
 
 For more details, please see the [documentation](https://).

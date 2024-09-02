@@ -1,8 +1,6 @@
 using MatrixFunctionDiff
 using Documenter
 
-DocMeta.setdocmeta!(MatrixFunctionDiff, :DocTestSetup, :(using MatrixFunctionDiff); recursive=true)
-
 makedocs(;
     modules=[MatrixFunctionDiff],
     authors="Xue Quan <xuequan818@gmail.com>",

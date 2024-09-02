@@ -2,11 +2,9 @@
 
 Let $\mathcal{H}:=\mathbb{C}^{N\times N}_{\rm her}$ be the vector space of $N\times N$ complex hermitian matrices. For $H\in\mathcal{H}$ and $h_1,...h_n\in\mathcal{H}$, and $f$ is a $n$ times continuously differentiable function on a subset of $\mathbb{C}$ containing the spectrum of $H+t_1h_1+\cdots + t_nh_n$, the $n$ order Fréchet derivative of $f(H)$ is
 ```math
-\begin{align}
-    \label{fd}
-    \nonumber
+\begin{align*}
     &{{\rm d}}^{n}f(H)h_1\cdots h_n =\\ &\frac{1}{2\pi i}\oint_\mathcal{C} f(z) \sum_{p\in\mathcal{P}_n}(z-H)^{-1}h_{p(1)}(z-H)^{-1}\cdots(z-H)^{-1}h_{p(n)}(z-H)^{-1}\; dz,
-\end{align}
+\end{align*}
 ```
 where $\mathcal{C}$ is a contour in the complex plane enclosing all the eigenvalues of $H$, and $p\in\mathcal{P}_n$ is an arbitrary permutation of $\{1,\cdots,n\}$. This can be proved by induction.
 
@@ -59,7 +57,7 @@ Let $(\lambda_i,\phi_i), i = 1,\dots,N$ be the eigenpairs of $H$, then for $p\in
     &=\sum_{i_0,\cdots,i_{n}=1}^N\phi_{i_0}(h_{p(1)})_{i_0,i_1}\cdots (h_{p(n)})_{i_{n-1},i_n}\phi_{i_{n}}^*(z-\lambda_{i_0})^{-1}\cdots (z-\lambda_{i_{n}})^{-1},
 \end{align*}
 ```
-where $`(h_{p(k)})_{i,j}=\phi_i^*h_{p(k)}\phi_j`$. We let
+where $(h_{p(k)})_{i,j}=\phi_i^*h_{p(k)}\phi_j$. We let
 ```math 
     (z-\lambda_{i_0})^{-1}\cdots (z-\lambda_{i_{n}})^{-1} = \sum_{k=0}^{n}C_k (z-\lambda_{i_k})^{-1},
 ```
@@ -80,15 +78,36 @@ Therefore, we have
 Finally, we obtain
 ```math 
 \begin{equation}
-\label{dd1}
     {{\rm d}}^{n}f(H)h_1\cdots h_n =\sum_{i_0,\cdots,i_{n}=1}^N\phi_{i_0}\Bigg(\sum_{p\in\mathcal{P}_n}(h_{p(1)})_{i_0,i_1}\cdots (h_{p(n)})_{i_{n-1},i_{n}}\Bigg)f[\lambda_{i_0},\cdots,\lambda_{i_{n}}]\phi_{i_{n}}^*,
 \end{equation}
 ```
 which can be also written as 
 ```math 
 \begin{equation}
-\label{dd2}
 (\Phi^*[{{\rm d}}^{n}f(H)h_1\cdots h_n]\Phi)_{k\ell}=\sum_{i_1,\cdots,i_{n-1}=1}^N\Bigg(\sum_{p\in\mathcal{P}_n}(h_{p(1)})_{k,i_1}\cdots (h_{p(n)})_{i_{n-1},\ell}\Bigg)f[\lambda_k,\lambda_{i_1},\cdots,\lambda_{i_{n-1}},\lambda_\ell],
 \end{equation}
 ```
 where $\Phi = (\phi_1,\cdots,\phi_N)$.
+
+## Array operations
+Use array operations to efficiently compute the Fréchet derivative. For simplicity, just consider the no permutation case and define
+```math
+(F_n)_{kℓ}:=∑_{i_1,⋯,i_{n-1}=1}^N(h_1)_{k,i_1}⋯ (h_n)_{i_{n-1},ℓ}Λ^{0,1,…,n-1,n}_{k,i_1,…,i_{n-1},ℓ},
+```
+where $Λ^{0,…,n}_{i_0,…,i_n} := f[λ_{i_0},⋯,λ_{i_n}]$. It is immediately to obtain that 
+```math
+F_1 =  h_1 ∘ Λ^{0,1},
+```
+and 
+```math
+F_2 = ∑_{i=1}^N (\mathfrak{h}^{1,2} ∘ Λ^{0,1,2})_{:,i,:},
+```
+ with $\mathfrak{h}^{1,2}_{:,i,:} := (h_1)_{:,i}(h_2)_{i,:}$. For $n ≥ 3$, first compute 
+```math
+\mathfrak{F}^{0,2,…,n}_{:,:,j_3,…,j_n} := ∑_{i=1}^N (\mathfrak{h}^{1,2} ∘ Λ^{0,1,…,n}_{:,:,:,j_3,…,j_n})_{:,i,:}
+```
+and permute such that the $0$-dimension is at the end $\mathfrak{F}^{2,…,n,0}$. Then for $m ≥ 3$, there is the recursion
+```math
+\mathfrak{F}^{m,…,n,0}_{:,j_m,…,j_n} = ∑_{i=1}^N (h_m ∘ \mathfrak{F}^{m-1,…,n,0}_{:,:,j_m,…,j_n})_{i,:}
+```
+and $F_n = (\mathfrak{F}^{n,0})^T$.

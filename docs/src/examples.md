@@ -1,6 +1,6 @@
 # Examples
 
-The [`mat_fun_frechet`](@ref) function computes the higher order Fréchet derivatives $`{{\rm d}}^{n}f(H)hs[1]\cdots hs[n]`$. It requires that the matrix `H` be a real symmetric or complex hermitian, the function `f` be a scalar function, and `hs` be a vector consisting of real symmetric or complex hermitian matrices. The order of the derivative is equal to the length of `hs`.
+The [`mat_fun_frechet`](@ref) function computes the higher order Fréchet derivatives ${{\rm d}}^{n}f(H)hs[1]\cdots hs[n]$. It requires that the matrix `H` be a real symmetric or complex hermitian, the function `f` be a scalar function, and `hs` be a vector consisting of real symmetric or complex hermitian matrices. The order of the derivative is equal to the length of `hs`.
 
 ```julia
 julia> using MatrixFunctionDiff

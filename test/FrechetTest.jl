@@ -4,13 +4,14 @@ using Test
 using MatrixFunctionDiff
 using DividedDifferences
 using LinearAlgebra
+using Combinatorics
 
 # compute the frechet derivative by element loop
 function frechet_naive(f::Function, eigs::Vector{Float64},
 					   Ψ::AbstractMatrix, 
 					   hs::Vector{V}) where {V<:AbstractMatrix}
     N = length(eigs)
-    order = length(E)
+    order = length(hs)
     DD_F = MatrixFunctionDiff.DD_tensor(f, eigs, order)
     hs = map(x -> Ψ' * x * Ψ, hs)
 
@@ -21,17 +22,19 @@ function frechet_naive(f::Function, eigs::Vector{Float64},
         ktr = ones(Int, order - 1)
         for k = 1:N^(order-1)
             kind = vcat(i, ktr, j)
-            hval = 0.0
+            hval = zero(T)
             for p in pert
                 hval += prod(l -> hs[p[l]][kind[l], kind[l+1]], 1:order)
             end
             val[i, j] += hval * DD_F[kind...]
 
-            ktr[1] += 1
-            for ℓ = 1:order-2
-                if ktr[ℓ] == N + 1
-                    ktr[ℓ] = 1
-                    ktr[ℓ+1] += 1
+            if length(ktr) > 0
+                ktr[1] += 1
+                for ℓ = 1:order-2
+                    if ktr[ℓ] == N + 1
+                        ktr[ℓ] = 1
+                        ktr[ℓ+1] += 1
+                    end
                 end
             end
         end

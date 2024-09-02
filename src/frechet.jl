@@ -1,29 +1,10 @@
-@doc row"""
+"""
     mat_fun_frechet(f, eigs, Ψ::AbstractMatrix, hs::Vector{AbstractMatrix})
     mat_fun_frechet(f, H::AbstractMatrix, hs::Vector{AbstractMatrix})
 
-Return the n-th order Fréchet derivative `d^nf(H)hs_1…hs_n`, assuming `f` is called as `f(x)`.
-Use array operations to efficiently compute the Fréchet derivative.
-For simplicity, just consider the no permutation case and define
-```math
-(F_n)_{kℓ}:=∑_{i_1,⋯,i_{n-1}=1}^N(h_1)_{k,i_1}⋯ (h_n)_{i_{n-1},ℓ}Λ^{0,1,…,n-1,n}_{k,i_1,…,i_{n-1},ℓ},
-```
-where $Λ^{0,…,n}_{i_0,…,i_n} := f[λ_{i_0},⋯,λ_{i_n}]$.
-It is immediately to obtain that $F_1 =  h_1 Λ^{0,1}$, 
-and $F_2 = ∑_{i=1}^N (\mathfrak{h}^{1,2} ∘ Λ^{0,1,2})_{:,i,:}$ with $\mathfrak{h}^{1,2}_{:,i,:} := (h_1)_{:,i}(h_2)_{i,:}$.
-For $n ≥ 3$, first compute 
-```math
-\mathfrak{F}^{0,2,…,n}_{:,:,j_3,…,j_n} := ∑_{i=1}^N (\mathfrak{h}^{1,2} ∘ Λ^{0,1,…,n}_{:,:,:,j_3,…,j_n})_{:,i,:}
-```
-and permute such that the $0$-dimension is at the end $
-\mathfrak{F}^{2,…,n,0}$. 
-Then for $m ≥ 3$, there is the recursion
-```math
-\mathfrak{F}^{m,…,n,0}_{:,j_m,…,j_n} = ∑_{i=1}^N (h_m ∘ \mathfrak{F}^{m-1,…,n,0}_{:,:,j_m,…,j_n})_{i,:}
-```
-and $F_n = (\mathfrak{F}^{n,0})^T$.
+Return the n-th order Fréchet derivative `d^nf(H)hs[1]…hs[n]`, assuming `f` is called as `f(x)`.
 """
-function mat_fun_frechet(f::Function, eigs::Vector{Float64},
+@inline function mat_fun_frechet(f::Function, eigs::Vector{Float64},
                          Ψ::AbstractMatrix, 
                          hs::Vector{V}) where {V<:AbstractMatrix}
     N = length(eigs)
@@ -31,9 +12,9 @@ function mat_fun_frechet(f::Function, eigs::Vector{Float64},
     DD_F = DD_tensor(f, eigs, order)
     hs = map(x -> Ψ' * x * Ψ, hs)
 
+    # F_1 =  h_1 ∘ Λ^{0,1}
     if order == 1
-        @. DD_F = DD_F .* hs[1]
-        return Ψ * DD_F * Ψ'
+        return Ψ * (hs[1] .* DD_F) * Ψ'
     end
 
     N0 = N^(order - 2)
@@ -42,25 +23,28 @@ function mat_fun_frechet(f::Function, eigs::Vector{Float64},
     T = promote_type(eltype(Ψ), eltype(V))
     val = zeros(T, N, N)
     h12 = zeros(T, N, N, N)
+
+    # loop for the permutations
     pert = collect(permutations(1:order))
-    for p in pert
+    for p in pert 
         @views hp = hs[p]
 
-        @. h12 = zero(TT)
+        # compute {h}^{1,2}_{:,i,:} := (h_1)_{:,i}(h_2)_{i,:}
+        @. h12 = zero(T)
         @views for i = 1:N
             h12[:, i, :] = hp[1][:, i] * transpose(hp[2][i, :])
         end
 
-        hF = zeros(TT, N, N, N0)
+        # compute {F}^{0,2,…,n}_{:,:,j_3,…,j_n} := ∑_{i=1}^N ({h}^{1,2} ∘ Λ^{0,1,…,n}_{:,:,:,j_3,…,j_n})_{:,i,:}
+        hF = zeros(T, N, N, N0)
         @views for i = 1:N0
             hF[:, :, i] = dropdims(sum(h12 .* DD_F[:, :, :, i], dims=2); dims=2)
         end
         hF = reshape(hF, ntuple(x -> N, order))
+        hF = permutedims(hF, tuple(2:order..., 1))
 
-        if order > 2
-            hF = permutedims(hF, tuple(2:order..., 1))
-        end
-
+        # compute the recursion 
+        # {F}^{m,…,n,0}_{:,j_m,…,j_n} = ∑_{i=1}^N (h_m ∘ {F}^{m-1,…,n,0}_{:,:,j_m,…,j_n})_{i,:}
         for k = 3:order
             Nk = N^(order + 1 - k)
             DD_Fk = reshape(hF, N, N, Nk)
@@ -70,14 +54,13 @@ function mat_fun_frechet(f::Function, eigs::Vector{Float64},
             end
         end
 
-        # directly add hF^{n,0} by the symmetry of frechet derivative  
         val += hF 
     end
 
-    Ψ * val * Ψ'
+    Ψ * transpose(val) * Ψ'
 end
 
-function mat_fun_frechet(f::Function, H::AbstractMatrix,
+@inline function mat_fun_frechet(f::Function, H::AbstractMatrix,
                          hs::Vector{V}) where {V<:AbstractMatrix}
     # only support hermitian matrices                        
     @assert norm(H - H') < eps(real(eltype(H)))
