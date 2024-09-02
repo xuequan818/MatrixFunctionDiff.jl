@@ -40,4 +40,4 @@ julia> eigs, Ψ = eigen(H);
 julia> mat_fun_frechet(f, eigs, Ψ, hs);
 ```
 
-For more details, please see the [documentation](https://).
+For more details, please see the [documentation](https://xuequan818.github.io/MatrixFunctionDiff.jl/dev/).

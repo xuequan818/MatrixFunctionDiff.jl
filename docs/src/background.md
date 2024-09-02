@@ -1,6 +1,6 @@
 ## Fréchet derivative of Matrix functions
 
-Let $\mathcal{H}:=\mathbb{C}^{N\times N}_{\rm her}$ be the vector space of $N\times N$ complex hermitian matrices. For $H\in\mathcal{H}$ and $h_1,...h_n\in\mathcal{H}$, and $f$ is a $n$ times continuously differentiable function on a subset of $\mathbb{C}$ containing the spectrum of $H+t_1h_1+\cdots + t_nh_n$, the $n$ order Fréchet derivative of $f(H)$ is
+Let $\mathcal{H}:=\mathbb{C}^{N\times N}_{\rm her}$ be the vector space of $N\times N$ complex hermitian matrices. For $H\in\mathcal{H}$ and $h_1,...h_n\in\mathcal{H}$, and $f$ is an $n$ times continuously differentiable function on a subset of $\mathbb{C}$ containing the spectrum of $H+t_1h_1+\cdots + t_nh_n$, the $n$ order Fréchet derivative of $f(H)$ is
 ```math
 \begin{align*}
     &{{\rm d}}^{n}f(H)h_1\cdots h_n =\\ &\frac{1}{2\pi i}\oint_\mathcal{C} f(z) \sum_{p\in\mathcal{P}_n}(z-H)^{-1}h_{p(1)}(z-H)^{-1}\cdots(z-H)^{-1}h_{p(n)}(z-H)^{-1}\; dz,
