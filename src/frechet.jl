@@ -80,7 +80,7 @@ end
 # DD_F = f[λ_i0, λ_i2, ..., λ_in]
 # By the permutation symmetry of the divided difference, 
 # we just calculate the irreducible vals
-function DD_tensor(f::Function, eigs::Vector{T}, order::Int64) where {T}
+function DD_tensor(f::Function, eigs::Vector{T}, order::Integer) where {T}
     N = length(eigs)
     dim = order + 1
     eigs_take(ind) = map(x -> eigs[x], ind)
