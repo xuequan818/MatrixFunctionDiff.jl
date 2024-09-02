@@ -1,5 +1,3 @@
-using PermutationSymmetricTensors: getindex
-
 """
     mat_fun_frechet(f, eigs, Ψ::AbstractMatrix, hs::Vector{AbstractMatrix})
     mat_fun_frechet(f, H::AbstractMatrix, hs::Vector{AbstractMatrix})
