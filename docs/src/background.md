@@ -54,7 +54,7 @@ Let $H=\Phi \Lambda\Phi^{-1}=\sum_i^N\lambda_i\phi_i\phi_i^{-1}$, where $\phi_i$
 ```math 
 \begin{align*}
     (z-&H)^{-1}h_{p(1)}(z-H)^{-1}\cdots(z-H)^{-1}h_{p(n)}(z-H)^{-1}\\
-    &=\sum_{i_0,\cdots,i_{n}=1}^N\phi_{i_0}(h_{p(1)})_{i_0,i_1}\cdots (h_{p(n)})_{i_{n-1},i_n}\phi_{i_{n}}^*(z-\lambda_{i_0})^{-1}\cdots (z-\lambda_{i_{n}})^{-1},
+    &=\sum_{i_0,\cdots,i_{n}=1}^N\phi_{i_0}(h_{p(1)})_{i_0,i_1}\cdots (h_{p(n)})_{i_{n-1},i_n}\phi_{i_{n}}^{-1}(z-\lambda_{i_0})^{-1}\cdots (z-\lambda_{i_{n}})^{-1},
 \end{align*}
 ```
 where $(h_{p(k)})_{i,j}=\phi_i^{-1}h_{p(k)}\phi_j$. We let
