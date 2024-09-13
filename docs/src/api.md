@@ -4,7 +4,7 @@
 CurrentModule = MatrixFunctionDiff
 ```
 
-## Fréchet derivatives of `f(x::Real)::Number`
+## Fréchet derivatives of `f(x::Number)::Number`
 ```@docs
 MatrixFunctionDiff.mat_fun_frechet
 ```
