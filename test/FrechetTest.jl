@@ -9,10 +9,10 @@ using Combinatorics
 # compute the frechet derivative by element loop
 function frechet_naive(f::Function, eigs::Vector{Float64},
 					   Ψ::AbstractMatrix, 
-					   hs::Vector{V}) where {V<:AbstractMatrix}
+					   hs::Vector{V}; kwargs...) where {V<:AbstractMatrix}
     N = length(eigs)
     order = length(hs)
-    hs = map(x -> Ψ' * x * Ψ, hs)
+    hs = map(x -> inv(Ψ) * x * Ψ, hs)
 
     pert = collect(permutations(1:order))
     T = promote_type(eltype(Ψ), eltype(V))
@@ -25,7 +25,7 @@ function frechet_naive(f::Function, eigs::Vector{Float64},
             for p in pert
                 hval += prod(l -> hs[p[l]][kind[l], kind[l+1]], 1:order)
             end
-            ΛF = divided_difference(f, eigs[kind])
+            ΛF = div_diff(f, eigs[kind]; kwargs...)
             val[i, j] += hval * ΛF
 
             if length(ktr) > 0
@@ -40,11 +40,11 @@ function frechet_naive(f::Function, eigs::Vector{Float64},
         end
     end
 
-    return Ψ * val * Ψ'
+    return Ψ * val * inv(Ψ)
 end
 
 const N = 10
-const Funs = [DividedDifferences.heaviside, x -> 1.0 / (1.0 + exp(10 * (x - 0.0)))]
+Funs = [ x -> 1.0 / (1.0 + exp(10*x))]
 
 @testset "Real symmetric matrix" begin
     X = rand(N, N);
@@ -71,6 +71,19 @@ end
         for f in Funs
             fd_test = frechet_naive(f, eigs, Ψ, hs)
             fd = mat_fun_frechet(f, eigs, Ψ, hs)
+            @test isapprox(fd_test, fd)
+        end
+    end
+end
+
+@testset "Non-hermitian matrix" begin
+    H = 0.1.*reshape(collect(-60:39),10,10) + diagm(collect(-4:5))
+    eigs, Ψ = eigen(H)
+    for order in 1:4
+        h = [rand(10, 10) for i = 1:order]
+        for f in Funs
+            fd_test = frechet_naive(f, eigs, Ψ, h)
+            fd = mat_fun_frechet(f, eigs, Ψ, h)
             @test isapprox(fd_test, fd)
         end
     end

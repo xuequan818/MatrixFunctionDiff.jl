@@ -1,20 +1,21 @@
 """
-    mat_fun_frechet(f, eigs, Ψ::AbstractMatrix, hs::Vector{AbstractMatrix})
-    mat_fun_frechet(f, H::AbstractMatrix, hs::Vector{AbstractMatrix})
+    mat_fun_frechet(f, eigs, Ψ::AbstractMatrix, h::Vector{AbstractMatrix})
+    mat_fun_frechet(f, H::AbstractMatrix, h::Vector{AbstractMatrix})
 
-Return the n-th order Fréchet derivative `d^nf(H)hs[1]…hs[n]`, assuming `f` is called as `f(x)`.
+Return the n-th order Fréchet derivative `d^nf(H)h[1]…h[n]`, assuming `f` is called as `f(x)`.
 """
 @inline function mat_fun_frechet(f::Function, eigs::Vector{Float64},
-                         Ψ::AbstractMatrix, 
-                         hs::Vector{V}) where {V<:AbstractMatrix}
+                                 Ψ::AbstractMatrix, 
+                                 h::Vector{V}; 
+                                 kwargs...) where {V<:AbstractMatrix}
     N = length(eigs)
-    order = length(hs)
-    DD_F = DD_tensor(f, eigs, order)
-    hs = map(x -> Ψ' * x * Ψ, hs)
+    order = length(h)
+    DD_F = DD_tensor(f, eigs, order; kwargs...)
+    h = map(x -> inv(Ψ) * x * Ψ, h)
 
     # F_1 =  h_1 ∘ Λ^{0,1}
     if order == 1
-        return Ψ * (hs[1] .* DD_F) * Ψ'
+        return Ψ * (h[1] .* DD_F) * inv(Ψ)
     end
 
     N0 = N^(order - 2)
@@ -27,7 +28,7 @@ Return the n-th order Fréchet derivative `d^nf(H)hs[1]…hs[n]`, assuming `f` i
     # loop for the permutations
     pert = collect(permutations(1:order))
     for p in pert 
-        @views hp = hs[p]
+        @views hp = h[p]
 
         # compute {h}^{1,2}_{:,i,:} := (h_1)_{:,i}(h_2)_{i,:}
         @. h12 = zero(T)
@@ -57,36 +58,32 @@ Return the n-th order Fréchet derivative `d^nf(H)hs[1]…hs[n]`, assuming `f` i
         val += hF 
     end
 
-    Ψ * transpose(val) * Ψ'
+    Ψ * transpose(val) * inv(Ψ)
 end
 
 @inline function mat_fun_frechet(f::Function, H::AbstractMatrix,
-                         hs::Vector{V}) where {V<:AbstractMatrix}
-    # only support hermitian matrices                        
-    @assert norm(H - H') < eps(real(eltype(H)))
-    for h in hs
-        @assert norm(h - h') < eps(real(eltype(h)))
-    end
-
-    # diagonalize H
-    # compute the full eigen pairs
+                                 h::Vector{V}; 
+                                 kwargs...) where {V<:AbstractMatrix}
+    # compute the full eigen decomposition
+    # H = Ψ * diagm(eigs) * inv(Ψ)
     eigs, Ψ = eigen(H)
 
     # compute the frechet derivative by eigen pairs
-    mat_fun_frechet(f, eigs, Ψ, hs)
+    mat_fun_frechet(f, eigs, Ψ, h; kwargs...)
 end
 
 # Generate the divided difference tensor 
 # DD_F = f[λ_i0, λ_i2, ..., λ_in]
 # By the permutation symmetry of the divided difference, 
 # we just calculate the irreducible vals
-function DD_tensor(f::Function, eigs::Vector{T}, order::Integer) where {T}
+function DD_tensor(f::Function, eigs::Vector{T}, 
+                   order::Integer; kwargs...) where {T}
     N = length(eigs)
     dim = order + 1
     eigs_take(ind) = map(x -> eigs[x], ind)
 
     DD_F_sym_index = find_full_indices(N, dim)
-    DD_F_sym_val = @. divided_difference(f, eigs_take(DD_F_sym_index))
+    DD_F_sym_val = @. div_diff(f, eigs_take(DD_F_sym_index); kwargs...)
     DD_F = SymmetricTensor(DD_F_sym_val, Val(N), Val(dim))
 
     return Array(DD_F)

@@ -1,6 +1,6 @@
 ## Fréchet derivative of Matrix functions
 
-Let $\mathcal{H}:=\mathbb{C}^{N\times N}_{\rm her}$ be the vector space of $N\times N$ complex hermitian matrices. For $H\in\mathcal{H}$ and $h_1,...h_n\in\mathcal{H}$, and $f$ is an $n$ times continuously differentiable function on a subset of $\mathbb{C}$ containing the spectrum of $H+t_1h_1+\cdots + t_nh_n$, the $n$ order Fréchet derivative of $f(H)$ is
+Let $\mathcal{H}:=\mathbb{C}^{N\times N}_{\rm diag}$ be the vector space of $N\times N$ diagonalizable matrices. For $H\in\mathcal{H}$ and $h_1,...h_n\in\mathcal{H}$, and $f$ is an $n$ times continuously differentiable function on a subset of $\mathbb{C}$ containing the spectrum of $H+t_1h_1+\cdots + t_nh_n$, the $n$-th order Fréchet derivative of $f(H)$ is
 ```math
 \begin{align*}
     &{{\rm d}}^{n}f(H)h_1\cdots h_n =\\ &\frac{1}{2\pi i}\oint_\mathcal{C} f(z) \sum_{p\in\mathcal{P}_n}(z-H)^{-1}h_{p(1)}(z-H)^{-1}\cdots(z-H)^{-1}h_{p(n)}(z-H)^{-1}\; dz,
@@ -28,7 +28,7 @@ we have
 ```
 which satisfies the formula.
 
-Assume the $n-1$ order derivative satisfies the formula. Then we have the $n$ order derivative
+Assume the $n-1$-th order derivative satisfies the formula. Then we have the $n$-th order derivative
 ```math
 \begin{align*}
     {{\rm d}}^{n}f(H)h_1\cdots h_n &=\lim_{t\to 0} \frac{{{\rm d}}^{n-1}f(H+th_n)h_1\cdots h_{n-1}-{{\rm d}}^{n-1}f(H)h_1\cdots h_{n-1}}{t}\\
@@ -50,14 +50,14 @@ Similarly, we have
 Therefore, we can obtain the formula.
 
 ## Divided difference form
-Let $(\lambda_i,\phi_i), i = 1,\dots,N$ be the eigenpairs of $H$, and assume there is no degeneration. Then for $p\in\mathcal{P}_n$ we have
+Let $H=\Phi \Lambda\Phi^{-1}=\sum_i^N\lambda_i\phi_i\phi_i^{-1}$, where $\phi_i$ is the $i$-th column of $\Phi$ and $\phi_i^{-1}$ is the $i$-th row of $\Phi^{-1}$, and assume there is no degeneration. Then for $p\in\mathcal{P}_n$ we have
 ```math 
 \begin{align*}
     (z-&H)^{-1}h_{p(1)}(z-H)^{-1}\cdots(z-H)^{-1}h_{p(n)}(z-H)^{-1}\\
     &=\sum_{i_0,\cdots,i_{n}=1}^N\phi_{i_0}(h_{p(1)})_{i_0,i_1}\cdots (h_{p(n)})_{i_{n-1},i_n}\phi_{i_{n}}^*(z-\lambda_{i_0})^{-1}\cdots (z-\lambda_{i_{n}})^{-1},
 \end{align*}
 ```
-where $(h_{p(k)})_{i,j}=\phi_i^*h_{p(k)}\phi_j$. We let
+where $(h_{p(k)})_{i,j}=\phi_i^{-1}h_{p(k)}\phi_j$. We let
 ```math 
     (z-\lambda_{i_0})^{-1}\cdots (z-\lambda_{i_{n}})^{-1} = \sum_{k=0}^{n}C_k (z-\lambda_{i_k})^{-1},
 ```
@@ -78,16 +78,15 @@ Therefore, we have
 Finally, we obtain
 ```math 
 \begin{equation}
-    {{\rm d}}^{n}f(H)h_1\cdots h_n =\sum_{i_0,\cdots,i_{n}=1}^N\phi_{i_0}\Bigg(\sum_{p\in\mathcal{P}_n}(h_{p(1)})_{i_0,i_1}\cdots (h_{p(n)})_{i_{n-1},i_{n}}\Bigg)f[\lambda_{i_0},\cdots,\lambda_{i_{n}}]\phi_{i_{n}}^*,
+    {{\rm d}}^{n}f(H)h_1\cdots h_n =\sum_{i_0,\cdots,i_{n}=1}^N\phi_{i_0}\Bigg(\sum_{p\in\mathcal{P}_n}(h_{p(1)})_{i_0,i_1}\cdots (h_{p(n)})_{i_{n-1},i_{n}}\Bigg)f[\lambda_{i_0},\cdots,\lambda_{i_{n}}]\phi_{i_{n}}^{-1},
 \end{equation}
 ```
 which can be also written as 
 ```math 
 \begin{equation}
-(\Phi^*[{{\rm d}}^{n}f(H)h_1\cdots h_n]\Phi)_{k\ell}=\sum_{i_1,\cdots,i_{n-1}=1}^N\Bigg(\sum_{p\in\mathcal{P}_n}(h_{p(1)})_{k,i_1}\cdots (h_{p(n)})_{i_{n-1},\ell}\Bigg)f[\lambda_k,\lambda_{i_1},\cdots,\lambda_{i_{n-1}},\lambda_\ell],
+(\Phi^{-1}[{{\rm d}}^{n}f(H)h_1\cdots h_n]\Phi)_{k\ell}=\sum_{i_1,\cdots,i_{n-1}=1}^N\Bigg(\sum_{p\in\mathcal{P}_n}(h_{p(1)})_{k,i_1}\cdots (h_{p(n)})_{i_{n-1},\ell}\Bigg)f[\lambda_k,\lambda_{i_1},\cdots,\lambda_{i_{n-1}},\lambda_\ell].
 \end{equation}
 ```
-where $\Phi = (\phi_1,\cdots,\phi_N)$.
 
 ## Array operations
 Use array operations to efficiently compute the Fréchet derivative. For simplicity, just consider the no permutation case and define
