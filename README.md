@@ -1,4 +1,4 @@
-[!WARNING] This package is deprecated and no longer maintained! Please move to [MatrixFuns.jl](https://github.com/xuequan818/MatrixFuns.jl).
+⚠️ **WARNING**: This package is deprecated and no longer maintained! Please move to [MatrixFuns.jl](https://github.com/xuequan818/MatrixFuns.jl).
 
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://xuequan818.github.io/MatrixFunctionDiff.jl/stable/)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://xuequan818.github.io/MatrixFunctionDiff.jl/dev/)
